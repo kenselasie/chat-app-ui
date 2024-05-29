@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(nanoid()) @db.VarChar(21)
+  email        String    @unique
+  username     String    @unique
+  password     String
+  isAdmin      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  photo        Upload?   @relation(fields: [photoId], references: [id])
+  photoId      String?   @db.VarChar(21)
+  Chat         Chat[]    @relation("UserChats")
+  messagesRead Message[] @relation("Readers")
+  messagesSent Message[] @relation("Sender")
+}
+
+model Chat {
+  id          String    @id @default(nanoid()) @db.VarChar(21)
+  chatName    String    @unique
+  isGroupChat Boolean   @default(false)
+  users       User[]    @relation("UserChats")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Message     Message[]
+}
+
+model Message {
+  id        String   @id @default(nanoid()) @db.VarChar(21)
+  sender    User     @relation("Sender", fields: [senderId], references: [id])
+  senderId  String   @db.VarChar(21)
+  content   String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   @db.VarChar(21)
+  readBy    User[]   @relation("Readers")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Upload {
+  id          String   @id @default(nanoid()) @db.VarChar(21)
+  original    String   @unique
+  thumbnail   String
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User[]
+}
