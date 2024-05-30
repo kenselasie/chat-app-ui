@@ -1,8 +1,21 @@
 "use server";
-
 import { Prisma } from "@prisma/client";
-import { db } from "../../db";
+import { db } from "../../../db";
 
+type ChatFullType = Prisma.ChatGetPayload<{
+  include: {
+    users: {
+      include: {
+        photo: true;
+      };
+    };
+    messages: {
+      include: {
+        sender: true;
+      };
+    };
+  };
+}>[];
 export const getUserByID = async ({ id }: { id: string }) => {
   const user = await db.user.findUnique({
     where: { id },
@@ -45,7 +58,21 @@ const getChats = async (params: {
 };
 
 export const searchChats = (searchTerm: string) => {
-  if (!searchTerm) return getChats({});
+  if (!searchTerm)
+    return getChats({
+      include: {
+        users: {
+          include: {
+            photo: true,
+          },
+        },
+        messages: {
+          include: {
+            sender: true,
+          },
+        },
+      },
+    }) as unknown as ChatFullType;
   return getChats({
     where: {
       users: {
@@ -58,8 +85,12 @@ export const searchChats = (searchTerm: string) => {
       },
     },
     include: {
-      users: true,
-      Message: {
+      users: {
+        include: {
+          photo: true,
+        },
+      },
+      messages: {
         where: {
           sender: {
             username: {
@@ -73,7 +104,7 @@ export const searchChats = (searchTerm: string) => {
         },
       },
     },
-  });
+  }) as unknown as ChatFullType;
 };
 
 export const getAllUsers = async (params: {

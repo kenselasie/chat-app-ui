@@ -3,18 +3,16 @@ import * as React from "react";
 import { ChevronDown, Mic, Paperclip, Send, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { FilePen } from "lucide-react";
 import chatIcon from "@/assets/chat.svg";
 import Image from "next/image";
-
 import FavouriteCarousel from "@/components/favourite-carousel";
 import { useQuery } from "@tanstack/react-query";
 import { getUserByID, searchChats } from "./actions";
 import { authStore } from "@/store/authStore";
-import { Prisma } from "@prisma/client";
 import ConvoScreen from "./ConvoScreen";
 import EmptyConvo from "./EmptyConvo";
+import ChatCell from "@/components/chat-cell";
 
 const Chat = async () => {
   const { data: userDetails, isLoading: isLoadingUserDetails } = useQuery({
@@ -33,6 +31,7 @@ const Chat = async () => {
     queryFn: () => searchChats(searchString),
   });
 
+  console.log(chats);
   React.useEffect(() => {
     const getData = setTimeout(() => {
       refetch();
@@ -83,7 +82,13 @@ const Chat = async () => {
                 <div className="flex w-full justify-center">
                   <FavouriteCarousel text={"Favourite chatters"} />
                 </div>
-                {"Usser here"}
+                <div className="flex flex-col gap-2 justify-center w-full">
+                  {chats?.map((chat, index) => (
+                    <div className="w-full" key={index}>
+                      <ChatCell chat={chat} />
+                    </div>
+                  ))}
+                </div>
               </>
             ) : (
               <div className="size-full">
