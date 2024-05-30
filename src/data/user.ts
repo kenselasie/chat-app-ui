@@ -1,7 +1,7 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
-import { db } from "../app/db";
+import { db } from "../db";
 
 export const getAllUsers = async (params: {
   skip?: number;

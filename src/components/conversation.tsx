@@ -48,7 +48,7 @@ const ConversationScreen = () => {
     <section className="flex flex-col gap-3 h-full overflow-y-scroll mt-5">
       <div className="mb-20">
         {messages.map((message, index) => (
-          <div key={index}>
+          <div key={index} className="mb-4">
             {message.type === "sending" ? (
               <div className="flex justify-between">
                 <div />

@@ -13,24 +13,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  MUST_UPDATE_USERNAME
+  MUST_UPDATE_NAME
+  NEW_USER
+  COMPLETE
+}
+
 model User {
-  id           String    @id @default(nanoid()) @db.VarChar(21)
-  email        String    @unique
-  username     String    @unique
-  password     String
-  isAdmin      Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  photo        Upload?   @relation(fields: [photoId], references: [id])
-  photoId      String?   @db.VarChar(21)
-  Chat         Chat[]    @relation("UserChats")
-  messagesRead Message[] @relation("Readers")
-  messagesSent Message[] @relation("Sender")
+  id           String     @id @default(nanoid()) @db.VarChar(21)
+  email        String     @unique
+  username     String     @unique
+  name         String?
+  status       UserStatus @default(MUST_UPDATE_USERNAME)
+  isAdmin      Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  photo        Upload?    @relation(fields: [photoId], references: [id])
+  photoId      String?    @db.VarChar(21)
+  Chat         Chat[]     @relation("UserChats")
+  messagesRead Message[]  @relation("Readers")
+  messagesSent Message[]  @relation("Sender")
+  OTP          OTP[]
 }
 
 model Chat {
   id          String    @id @default(nanoid()) @db.VarChar(21)
-  chatName    String    @unique
+  chatName    String?
   isGroupChat Boolean   @default(false)
   users       User[]    @relation("UserChats")
   createdAt   DateTime  @default(now())
@@ -59,4 +68,12 @@ model Upload {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User[]
+}
+
+model OTP {
+  id        Int      @id @default(autoincrement())
+  code      String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
