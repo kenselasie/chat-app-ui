@@ -2,8 +2,10 @@ import { Prisma } from "@prisma/client";
 import * as React from "react";
 import Image from "next/image";
 import { authStore } from "@/store/authStore";
+import Link from "next/link";
+import { ROUTES } from "@/const/routes";
 
-type ChatCellProps = Prisma.ChatGetPayload<{
+export type ChatCellProps = Prisma.ChatGetPayload<{
   include: {
     users: {
       include: {
@@ -17,24 +19,29 @@ type ChatCellProps = Prisma.ChatGetPayload<{
     };
   };
 }>;
+
 const ChatCell = ({ chat }: { chat: ChatCellProps }) => {
-  const recipientName = () => {
-    if (chat.users.length <= 0) return "No Name";
+  const getRecipient = () => {
+    if (chat.users.length <= 0) return null;
     if (chat.users.length === 1) {
-      return chat.users[0].name;
+      return chat.users[0];
     }
-    if (chat.users.length === 2) {
-      return chat.users.filter((el) => el.id === authStore.userDetails?.id)[0]
-        .name;
-    }
-    return chat.chatName;
+    return chat.users.filter((el) => el.id !== authStore.userDetails?.id)[0];
   };
+  const recipient = getRecipient();
+
   return (
-    <div className="flex w-full gap-3 cursor-pointer hover:bg-[#F7F7F7] p-4">
+    <Link
+      href={ROUTES.CHAT_DASHBOARD({
+        recipientId: recipient?.id,
+        chatId: chat.id,
+      })}
+      className="flex w-full gap-3 cursor-pointer hover:bg-[#F7F7F7] p-4"
+    >
       <div>
-        {chat.users[0].photo ? (
+        {recipient?.photo ? (
           <Image
-            src={chat.users[0].photo.thumbnail}
+            src={recipient?.photo.thumbnail}
             width={48}
             height={48}
             alt="profile-img"
@@ -45,14 +52,14 @@ const ChatCell = ({ chat }: { chat: ChatCellProps }) => {
       </div>
       <div className="flex flex-col w-full justify-center">
         <div className="flex justify-between">
-          <p className="text-[15px] font-bold">{recipientName()}</p>
+          <p className="text-[15px] font-bold">{recipient?.name}</p>
           <p className="text-xs text-gray-400">8:46am</p>
         </div>
         <div>
           <p className="text-sm">I actually tell am. That be what I tell...</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

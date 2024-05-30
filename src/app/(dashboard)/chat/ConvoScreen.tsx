@@ -1,55 +1,71 @@
 import * as React from "react";
 import ConversationScreen from "@/components/conversation";
 import ConvoHeader from "@/components/convo-header";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Mic, Paperclip, Send, Smile } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getChatById } from "@/app/(dashboard)/chat/actions";
+import { authStore } from "@/store/authStore";
+import { ChatCellProps } from "@/components/chat-cell";
+import { z } from "zod";
+import InputBox from "./InputBox";
+
+const ChatFormSchema = z.object({
+  message: z.string({
+    message: "No message",
+  }),
+});
+type TChatFormSchema = z.infer<typeof ChatFormSchema>;
 
 const ConvoScreen = () => {
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get("chatId") || "";
+  const recipientId = searchParams.get("recipientId") || "";
+  const {
+    data: userChat,
+    isLoading: isLoadingChat,
+    error: chatError,
+  } = useQuery({
+    queryKey: ["getChatById", chatId],
+    queryFn: () =>
+      getChatById({
+        id: chatId,
+      }),
+  });
+
+  const getRecipient = (chat: ChatCellProps) => {
+    if (chat.users.length <= 0) return null;
+    if (chat.users.length === 1) {
+      return chat.users[0];
+    }
+    return chat.users.filter((el) => el.id !== authStore.userDetails?.id)[0];
+  };
+
+  if (isLoadingChat) {
+    return (
+      <div className="flex flex-col gap-3 items-centerS h-full overflow-y-scroll mt-5">
+        <p className="font-bold">Loading chats...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex h-screen min-h-[50vh] flex-col lg:col-span-2 p-4">
       <div className="flex-1 h-[95%]">
         <div className="h-[7%]">
-          <ConvoHeader />
+          {userChat?.data && (
+            <ConvoHeader name={getRecipient(userChat.data)?.name || ""} />
+          )}
           <hr />
         </div>
         <div className="h-[93%]">
-          <ConversationScreen />
+          <ConversationScreen
+            messages={userChat?.data?.messages!}
+            userId={authStore.userDetails?.id || ""}
+          />
         </div>
       </div>
-      <form className="flex gap-4 items-center h-[5%]">
-        <div className="relative overflow-hidden rounded-3xl  w-full">
-          <Label htmlFor="message" className="sr-only">
-            Message
-          </Label>
-          <Textarea
-            id="message"
-            placeholder="Type your message"
-            className="bg-[#F7F7F7] min-h-12 resize-none border-0 shadow-none placeholder:pt-2"
-          />
-          <div className="absolute top-2 right-2 flex items-center space-x-2">
-            <Button type="button" variant="ghost" size="icon">
-              <Smile className="size-5" color="#101C26" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-            <Button type="button" variant="ghost" size="icon">
-              <Paperclip className="size-5" color="#101C26" />
-              <span className="sr-only">Attach file</span>
-            </Button>
-            <Button type="button" variant="ghost" size="icon">
-              <Mic className="size-5" color="#101C26" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-          </div>
-        </div>
-        <div>
-          <Button type="button" size="icon">
-            <Send className="size-5" />
-            <span className="sr-only">Use Microphone</span>
-          </Button>
-        </div>
-      </form>
+      <InputBox chatId={chatId} />
     </div>
   );
 };

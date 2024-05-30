@@ -83,16 +83,13 @@ const VerifyMail = () => {
           if (data.userDetails.status === "MUST_UPDATE_USERNAME") {
             return router.push(ROUTES.SETUP_CHATID);
           } else {
-            return router.push(ROUTES.CHAT_DASHBOARD);
+            return router.push(ROUTES.CHAT_DASHBOARD({}));
           }
         },
         onError: (err) => {
           const error = err as any;
           toast.error(error?.message || "Something bad happened");
         },
-        // onSettled: () => {
-        //   router.push(ROUTES.VERIFY(email));
-        // },
       }
     );
   };

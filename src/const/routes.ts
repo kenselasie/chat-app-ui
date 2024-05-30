@@ -9,5 +9,8 @@ export const ROUTES = {
     });
     return `/verify-mail?${params}`;
   },
-  CHAT_DASHBOARD: "/chat",
+  CHAT_DASHBOARD: (params: { recipientId?: string; chatId?: string }) => {
+    const urlParams = new URLSearchParams(params);
+    return `/chat?${urlParams}`;
+  },
 } as const;

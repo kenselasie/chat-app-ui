@@ -57,9 +57,102 @@ const getChats = async (params: {
   return chats;
 };
 
-export const searchChats = (searchTerm: string) => {
+export const getChatById = async ({ id }: { id: string }) => {
+  const chat = await db.chat.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      users: {
+        include: {
+          photo: true,
+        },
+      },
+      messages: {
+        include: {
+          sender: true,
+        },
+      },
+    },
+  });
+  return {
+    data: chat,
+    success: true,
+    message: "retrieved chats",
+  };
+};
+
+export const startChatsWithAnotherUser = async (params: {
+  senderId: string;
+  recipientId: string;
+}) => {
+  const chatExist = await db.chat.findFirst({
+    where: {
+      AND: [
+        {
+          users: {
+            some: {
+              id: params.senderId,
+            },
+          },
+        },
+        {
+          users: {
+            some: {
+              id: params.recipientId,
+            },
+          },
+        },
+      ],
+    },
+  });
+
+  if (chatExist) throw new Error("Chat with the user already exist.");
+  const senderUser = await db.user.update({
+    where: { id: params.senderId },
+    data: {
+      status: "COMPLETE",
+    },
+  });
+  const recipientUser = await db.user.update({
+    where: { id: params.recipientId },
+    data: {
+      status: "COMPLETE",
+    },
+  });
+  const createdChat = await db.chat.create({
+    data: {
+      users: {
+        connect: [{ id: params.senderId }, { id: params.recipientId }],
+      },
+    },
+    include: {
+      users: true,
+    },
+  });
+  return {
+    success: true,
+    message: "started chat",
+    data: createdChat,
+  };
+};
+
+export const searchChats = ({
+  userId,
+  searchTerm,
+}: {
+  userId: string;
+  searchTerm: string;
+}) => {
   if (!searchTerm)
     return getChats({
+      where: {
+        users: {
+          some: {
+            id: userId,
+          },
+        },
+      },
       include: {
         users: {
           include: {
@@ -77,6 +170,7 @@ export const searchChats = (searchTerm: string) => {
     where: {
       users: {
         some: {
+          id: userId,
           username: {
             contains: searchTerm,
             mode: "insensitive",
@@ -107,6 +201,26 @@ export const searchChats = (searchTerm: string) => {
   }) as unknown as ChatFullType;
 };
 
+export const sendMessageToChat = async (params: {
+  chatId: string;
+  senderId: string;
+  content: string;
+}) => {
+  const msg = await db.message.create({
+    data: {
+      chatId: params.chatId,
+      senderId: params.senderId,
+      content: params.content,
+    },
+  });
+
+  return {
+    data: msg,
+    success: true,
+    message: "Message sent",
+  };
+};
+
 export const getAllUsers = async (params: {
   skip?: number;
   take?: number;
@@ -114,6 +228,10 @@ export const getAllUsers = async (params: {
   where?: Prisma.UserWhereInput;
   orderBy?: Prisma.UserOrderByWithRelationInput;
 }) => {
-  const users = await db.user.findMany({});
+  const users = await db.user.findMany({
+    include: {
+      photo: true,
+    },
+  });
   return users;
 };

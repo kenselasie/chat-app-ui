@@ -14,7 +14,7 @@ const RequiresGuest = ({ children }: React.PropsWithChildren) => {
       } else if (authStore.userDetails?.status === "MUST_UPDATE_NAME") {
         router.replace(ROUTES.SETUP_PROFILE);
       } else {
-        router.replace(ROUTES.CHAT_DASHBOARD);
+        router.replace(ROUTES.CHAT_DASHBOARD({}));
       }
     }
   }, [router]);

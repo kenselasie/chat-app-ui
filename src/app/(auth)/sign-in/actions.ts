@@ -33,6 +33,8 @@ export const sendOTPVerification = async (params: { email: string }) => {
       },
     },
   });
+
+  console.log(OTPCode);
   await transportOTPMail({ toMail: params.email, OTPCode: otpResults.code });
   return {
     success: true,

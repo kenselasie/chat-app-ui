@@ -12,7 +12,7 @@ export default function Home() {
       router.replace(ROUTES.SIGN_IN);
     } else {
       if (authStore.userDetails?.status === "COMPLETE") {
-        router.replace(ROUTES.CHAT_DASHBOARD);
+        router.replace(ROUTES.CHAT_DASHBOARD({}));
       } else {
         router.replace(ROUTES.SETUP_CHATID);
       }
