@@ -51,9 +51,7 @@ const ChatUserCell = ({ user }: { user: ChatUserCellProps }) => {
           toast.error(err.message);
         },
         onSettled: () => {
-          queryClient.invalidateQueries({
-            queryKey: ["getMyChats"],
-          });
+          queryClient.invalidateQueries();
         },
       }
     );
