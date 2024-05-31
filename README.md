@@ -1,6 +1,6 @@
 # Introduction
 
-This is a chat application built with `NEXT JS`, `Prisma`, `React-Query`, `Server Actions`, `Socket.IO` etc.
+This is a chat application built with `Next Js`, `Prisma`, `React-Query`, `Server Actions`, `Socket.IO`, `Postgres` etc.
 
 ## Getting Started
 
