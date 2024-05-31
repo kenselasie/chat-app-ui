@@ -1,4 +1,6 @@
-This is a chat application built with NEXT JS, React-Query, Server Actions etc.
+# Introduction
+
+This is a chat application built with `NEXT JS`, `React-Query`, `Server Actions`, `Socket.IO` etc.
 
 ## Getting Started
 
@@ -24,4 +26,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - To allow for image uploads, create an `uploads` folder inside the public folder. you can leave the folder empty. Or create a `Readme` file in there.
 
-- Create a `.env` with the values in `.env.template`
+- Create a `.env` with the values in `.env.template`. Here are the keys and what they mean
+  - `DATABASE_URL`="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
+  - `MAILGUN_API_KEY`: This is the mailgun api-key from [mailgun](https://www.mailgun.com/) service. Creating a test account is free.
+  - `MAILGUN_DOMAIN`: This is the mailgun domain from [mailgun](https://www.mailgun.com/). Creating a test account is free.
+  - `JWT_KEY`: A key for JWT tokens
+  - `SOCKET_ENDPOINT`: This is the endpoint associated to the [chat-socket-server](https://github.com/kenselasie/chat-sockets-server.git)
