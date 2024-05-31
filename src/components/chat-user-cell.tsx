@@ -37,7 +37,7 @@ const ChatUserCell = ({ user }: { user: ChatUserCellProps }) => {
         onSuccess: (data) => {
           toast.success(data.message);
           const recpt = data.data.users.filter(
-            (usr) => usr.id === authStore?.userDetails?.id
+            (usr) => usr.id !== authStore?.userDetails?.id
           )[0];
           console.log(recpt);
           router.push(
