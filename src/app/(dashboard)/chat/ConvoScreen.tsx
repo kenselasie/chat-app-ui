@@ -3,14 +3,15 @@ import * as React from "react";
 import ConversationScreen from "@/components/conversation";
 import ConvoHeader from "@/components/convo-header";
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { getChatById } from "@/app/(dashboard)/chat/actions";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getChatById, makeChatFavourite } from "@/app/(dashboard)/chat/actions";
 import { authStore } from "@/store/authStore";
 import { ChatCellProps } from "@/components/chat-cell";
 import { z } from "zod";
 import InputBox from "./InputBox";
 import { socket } from "@/socket";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const ChatFormSchema = z.object({
   message: z.string({
@@ -43,6 +44,13 @@ const ConvoScreen = () => {
     },
   });
 
+  const { mutate: makeChatFavouriteService, isPending: isMakingChatFav } =
+    useMutation({
+      mutationKey: ["makeChatFavourite"],
+      mutationFn: (variables: { chatId: string; userId: string }) =>
+        makeChatFavourite(variables),
+    });
+
   const getRecipient = (chat: ChatCellProps) => {
     if (chat.users.length <= 0) return null;
     if (chat.users.length === 1) {
@@ -69,6 +77,33 @@ const ConvoScreen = () => {
     }, timerLength);
   };
 
+  const makeFav = () => {
+    makeChatFavouriteService(
+      {
+        chatId,
+        userId: authStore.userDetails?.id || "",
+      },
+      {
+        onSuccess: (data) => {
+          toast.success(data.message);
+        },
+        onError: (err) => {
+          toast.error(err?.message);
+          console.log(err);
+        },
+        onSettled: () => {
+          console.log("reljndsm");
+          queryClient.invalidateQueries({
+            queryKey: ["getChatById"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["getMyChats"],
+          });
+          queryClient.invalidateQueries();
+        },
+      }
+    );
+  };
   React.useEffect(() => {
     console.log(recipientId, chatId);
     socket.emit("setup", authStore.userDetails);
@@ -89,18 +124,28 @@ const ConvoScreen = () => {
 
   if (isLoadingChat) {
     return (
-      <div className="flex flex-col gap-3 items-centerS h-full overflow-y-scroll mt-5">
+      <div className="flex gap-3 items-center justify-center h-full flex-col lg:col-span-2 overflow-y-scroll">
         <p className="font-bold">Loading chats...</p>
       </div>
     );
   }
-
+  console.log(
+    userChat?.data?.usersFav.find((el) => el.id === authStore.userDetails?.id)
+      ?.id
+  );
   return (
     <div className="relative flex h-screen min-h-[50vh] flex-col lg:col-span-2 p-4">
       <div className="flex-1 h-[95%]">
         <div className="h-[7%]">
           {userChat?.data && (
             <ConvoHeader
+              onMakeFav={makeFav}
+              isChatFavourite={
+                userChat?.data?.usersFav.length > 0 &&
+                !!userChat?.data?.usersFav.find(
+                  (el) => el.id === authStore.userDetails?.id
+                )?.id
+              }
               profileImage={getRecipient(userChat.data)?.photo?.thumbnail}
               name={getRecipient(userChat.data)?.name || ""}
             />

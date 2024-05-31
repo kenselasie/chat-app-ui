@@ -32,6 +32,7 @@ model User {
   photo        Upload?    @relation(fields: [photoId], references: [id])
   photoId      String?    @db.VarChar(21)
   Chat         Chat[]     @relation("UserChats")
+  favChat      Chat[]     @relation("favChats")
   messagesRead Message[]  @relation("Readers")
   messagesSent Message[]  @relation("Sender")
   OTP          OTP[]
@@ -42,6 +43,7 @@ model Chat {
   chatName    String?
   isGroupChat Boolean   @default(false)
   users       User[]    @relation("UserChats")
+  usersFav    User[]    @relation("favChats")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   messages    Message[]

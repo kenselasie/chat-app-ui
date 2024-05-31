@@ -27,7 +27,7 @@ const MessageBox = ({ type, content, date, image }: MessageBoxProps) => {
         )}
         <div className="flex flex-col justify-center bg-[#F1F1F1] size-fit max-w-[500px] rounded-[32px] min-h-[58px] p-4">
           <p className="text-xs">{format(date, "hh:mm aaa")}</p>
-          <p className="text-base">{content}</p>
+          <p className="text-sm">{content}</p>
         </div>
       </div>
     );
@@ -37,7 +37,7 @@ const MessageBox = ({ type, content, date, image }: MessageBoxProps) => {
       <MoveUpLeft color="#289DFE" className="self-end" />
       <div className="flex flex-col justify-center bg-[#101C26] text-white size-fit max-w-[500px] rounded-[32px] min-h-[58px] p-4">
         <p className="text-xs">{format(date, "hh:mm aaa")}</p>
-        <p className="text-base">{content}</p>
+        <p className="text-sm">{content}</p>
       </div>
       {image ? (
         <Image

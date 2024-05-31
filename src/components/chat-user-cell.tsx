@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { startChatsWithAnotherUser } from "@/app/(dashboard)/chat/actions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 type ChatUserCellProps = Prisma.UserGetPayload<{
   include: {
@@ -72,7 +73,11 @@ const ChatUserCell = ({ user }: { user: ChatUserCellProps }) => {
             className="rounded-full min-h-[48px] min-w-[48px] borer border-2"
           />
         ) : (
-          <div className="rounded-full size-[48px] bg-gray-200" />
+          <Avatar>
+            <AvatarFallback className="bg-[#DDE7F2] text-[#094C97]">
+              {(user?.name || "").charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         )}
       </div>
       <div className="flex flex-col w-full justify-center">

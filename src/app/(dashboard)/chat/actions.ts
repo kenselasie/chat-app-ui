@@ -20,7 +20,18 @@ type ChatFullType = Prisma.ChatGetPayload<{
 export const getUserByID = async ({ id }: { id: string }) => {
   const user = await db.user.findUnique({
     where: { id },
-    include: { photo: true },
+    include: {
+      photo: true,
+      favChat: {
+        include: {
+          users: {
+            include: {
+              photo: true,
+            },
+          },
+        },
+      },
+    },
   });
   return user;
 };
@@ -64,6 +75,7 @@ export const getChatById = async ({ id }: { id: string }) => {
       id,
     },
     include: {
+      usersFav: true,
       users: {
         include: {
           photo: true,
@@ -175,8 +187,16 @@ export const searchChats = ({
     where: {
       users: {
         some: {
-          id: userId,
-          username: {
+          // id: userId,
+          name: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        },
+      },
+      messages: {
+        some: {
+          content: {
             contains: searchTerm,
             mode: "insensitive",
           },
@@ -190,14 +210,6 @@ export const searchChats = ({
         },
       },
       messages: {
-        where: {
-          sender: {
-            username: {
-              contains: searchTerm,
-              mode: "insensitive",
-            },
-          },
-        },
         include: {
           sender: true,
         },
@@ -226,6 +238,53 @@ export const sendMessageToChat = async (params: {
   };
 };
 
+export const makeChatFavourite = async ({
+  chatId,
+  userId,
+}: {
+  userId: string;
+  chatId: string;
+}) => {
+  const chat = db.chat.update({
+    where: {
+      id: chatId,
+    },
+    data: {
+      usersFav: {
+        connect: { id: userId },
+      },
+    },
+  });
+  return {
+    success: true,
+    message: "Chat added to favourites",
+    data: chat,
+  };
+};
+
+export const getUsersToChatWith = async ({ id }: { id: string }) => {
+  const where: Prisma.UserWhereInput = {
+    id: {
+      not: id, // Exclude the current user from the results
+    },
+    AND: [
+      {
+        Chat: {
+          none: {
+            users: {
+              some: {
+                id: id,
+              },
+            },
+          },
+        },
+      },
+    ],
+  };
+
+  const users = await getAllUsers({ where });
+  return users;
+};
 export const getAllUsers = async (params: {
   skip?: number;
   take?: number;

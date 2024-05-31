@@ -8,7 +8,12 @@ import chatIcon from "@/assets/chat.svg";
 import Image from "next/image";
 import FavouriteCarousel from "@/components/favourite-carousel";
 import { useQuery } from "@tanstack/react-query";
-import { getAllUsers, getUserByID, searchChats } from "./actions";
+import {
+  getAllUsers,
+  getUserByID,
+  getUsersToChatWith,
+  searchChats,
+} from "./actions";
 import { authStore } from "@/store/authStore";
 import ConvoScreen from "./ConvoScreen";
 import EmptyConvo from "./EmptyConvo";
@@ -32,10 +37,10 @@ const Chat = () => {
     isLoading: isLoadingChats,
     error: chatError,
   } = useQuery({
-    queryKey: ["getMyChats", searchString],
+    queryKey: ["getMyChats", userDetails?.id, searchString],
     queryFn: () =>
       searchChats({
-        userId: authStore?.userDetails?.id || "",
+        userId: userDetails?.id || "",
         searchTerm: searchString,
       }),
   });
@@ -46,7 +51,7 @@ const Chat = () => {
     error: usersError,
   } = useQuery({
     queryKey: ["getUsers", searchString],
-    queryFn: () => getAllUsers({}),
+    queryFn: () => getUsersToChatWith({ id: userDetails?.id || "" }),
   });
 
   React.useEffect(() => {
@@ -98,14 +103,19 @@ const Chat = () => {
             {userDetails?.status === "COMPLETE" ? (
               <>
                 <div className="flex w-full justify-center">
-                  <FavouriteCarousel text={"Favourite chatters"} />
+                  <FavouriteCarousel
+                    userId={userDetails.id || ""}
+                    text={"Favourite chatters"}
+                  />
                 </div>
                 <div className="flex flex-col gap-2 justify-center w-full">
-                  {chats?.map((chat, index) => (
-                    <div className="w-full" key={index}>
-                      <ChatCell recipientId={recipientId} chat={chat} />
-                    </div>
-                  ))}
+                  {chats
+                    ?.filter((el) => el.users.length > 1)
+                    .map((chat, index) => (
+                      <div className="w-full" key={index}>
+                        <ChatCell recipientId={recipientId} chat={chat} />
+                      </div>
+                    ))}
                   <p className="text-xs font-bold text-center">New Chats</p>
                   {usersData?.map((usr, index) => (
                     <div className="w-full" key={index}>

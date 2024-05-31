@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ROUTES } from "@/const/routes";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export type ChatCellProps = Prisma.ChatGetPayload<{
   include: {
@@ -59,7 +60,11 @@ const ChatCell = ({
             className="rounded-full min-h-[48px] min-w-[48px] borer border-2"
           />
         ) : (
-          <div className="rounded-full size-[48px] bg-gray-200" />
+          <Avatar>
+            <AvatarFallback className="bg-[#DDE7F2] text-[#094C97]">
+              {(recipient?.name || "").charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         )}
       </div>
       <div className="flex flex-col w-full justify-center">
