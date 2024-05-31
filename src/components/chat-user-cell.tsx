@@ -65,10 +65,11 @@ const ChatUserCell = ({ user }: { user: ChatUserCellProps }) => {
       <div>
         {user.photo ? (
           <Image
-            src={user.photo.thumbnail}
+            src={`/uploads/${user.photo.thumbnail}`}
             width={48}
             height={48}
             alt="profile-img"
+            className="rounded-full min-h-[48px] min-w-[48px] borer border-2"
           />
         ) : (
           <div className="rounded-full size-[48px] bg-gray-200" />

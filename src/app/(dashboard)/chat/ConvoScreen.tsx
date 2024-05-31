@@ -100,7 +100,10 @@ const ConvoScreen = () => {
       <div className="flex-1 h-[95%]">
         <div className="h-[7%]">
           {userChat?.data && (
-            <ConvoHeader name={getRecipient(userChat.data)?.name || ""} />
+            <ConvoHeader
+              profileImage={getRecipient(userChat.data)?.photo?.thumbnail}
+              name={getRecipient(userChat.data)?.name || ""}
+            />
           )}
           <hr />
         </div>

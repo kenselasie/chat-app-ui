@@ -5,7 +5,11 @@ import { Prisma } from "@prisma/client";
 type ConversationScreenProps = {
   messages: Prisma.MessageGetPayload<{
     include: {
-      sender: true;
+      sender: {
+        include: {
+          photo: true;
+        };
+      };
     };
   }>[];
   userId: string;
@@ -21,6 +25,7 @@ const ConversationScreen = ({ messages, userId }: ConversationScreenProps) => {
                 <div className="flex justify-between">
                   <div />
                   <MessageBox
+                    image={message.sender.photo?.thumbnail}
                     type={"sending"}
                     content={message.content}
                     date={message.createdAt}
@@ -29,6 +34,7 @@ const ConversationScreen = ({ messages, userId }: ConversationScreenProps) => {
               ) : (
                 <div>
                   <MessageBox
+                    image={message.sender.photo?.thumbnail}
                     type={"receiving"}
                     content={message.content}
                     date={message.createdAt}

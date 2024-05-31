@@ -43,13 +43,25 @@ const SetupProfile = () => {
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["updateProfile"],
-    mutationFn: (variables: { name: string; id: string }) =>
-      updateProfile({ id: variables.id, name: variables.name }),
+    mutationFn: (variables: {
+      name: string;
+      id: string;
+      profilePhoto?: FormData;
+    }) => updateProfile(variables),
   });
 
   const onSubmit = async ({ name }: TSetUpProfileFormValidator) => {
+    const formData = new FormData();
+
+    if (file && file.length > 0) {
+      formData.append("file", file[0]);
+    }
     mutate(
-      { id: userDetails?.id!, name },
+      {
+        id: userDetails?.id!,
+        name,
+        profilePhoto: formData,
+      },
       {
         onSuccess: (data) => {
           console.log(data);

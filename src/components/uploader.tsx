@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FileSpreadsheet, ImageIcon, UploadIcon, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import UploadPhotoPlaceholder from "@/assets/upload_photo_placeholder.svg";
+import { Button } from "./ui/button";
 
 interface IUploadFiles {
   file: File;
@@ -74,37 +75,17 @@ export default function Uploader({
   const thumbs = uploadFiles?.map((uplFile, idx) => {
     if (uplFile.displayURL) {
       return (
-        <div
-          className="inline-flex flex-col overflow-hidden border border-border-200 rounded mt-2 me-2 relative"
-          key={idx}
-        >
-          {fileType === "Excel" ? (
-            <div className="flex items-center gap-2 p-4">
-              <FileSpreadsheet />
-              <p className="text-xs">{uplFile.displayURL}</p>
-              <button
-                className="size-4 flex items-center justify-center ml-4 rounded-full bg-red-500 text-xs absolute top-1 end-2 shadow-xl outline-none"
-                onClick={() => handleDelete(uplFile)}
-              >
-                <X size={12} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center min-w-0 w-16 h-16 overflow-hidden">
-              <Image
-                width={50}
-                height={50}
-                src={uplFile.displayURL}
-                alt="thumbnail"
-              />
-              <button
-                className="size-4 flex items-center justify-center ml-4 rounded-full bg-red-500 text-xs absolute top-1 end-2 shadow-xl outline-none"
-                onClick={() => handleDelete(uplFile)}
-              >
-                <X size={12} />
-              </button>
-            </div>
-          )}
+        <div key={idx} className="">
+          <div className="">
+            <Button
+              size={"sm"}
+              variant={"ghost"}
+              className="flex items-center justify-center mt-4 rounded-full text-xs"
+              onClick={() => handleDelete(uplFile)}
+            >
+              Remove <X size={12} />
+            </Button>
+          </div>
           {multiple ? (
             <button
               className="w-4 h-4 flex items-center justify-center rounded-full bg-red-600 text-xs text-light absolute top-1 end-1 shadow-xl outline-none"
@@ -126,13 +107,23 @@ export default function Uploader({
         })}
       >
         <Input {...getInputProps()} />
-        <Image
-          src={UploadPhotoPlaceholder}
-          width="200"
-          height="200"
-          className="p-3 rounded-full border z-10"
-          alt={"uploadPhotoPlacehoder"}
-        />
+        {uploadFiles && uploadFiles?.length > 0 ? (
+          <Image
+            src={uploadFiles[0].displayURL}
+            width="200"
+            height="200"
+            className="p-3 rounded-full border min-h-[200px] min-w-[200px] z-10"
+            alt={"uploadPhotoPlacehoder"}
+          />
+        ) : (
+          <Image
+            src={UploadPhotoPlaceholder}
+            width="200"
+            height="200"
+            className="p-3 rounded-full border z-10"
+            alt={"uploadPhotoPlacehoder"}
+          />
+        )}
         <div className="flex absolute items-center w-[165px] ml-2 justify-center gap-2 rounded-3xl bg-white h-10 shadow-[0px_2px_16px_0px_#101C261F] text-sm mt-[-20px] z-20 text-center">
           <ImageIcon size={20} />
           <span className="font-semibold text-xs">{text}</span>

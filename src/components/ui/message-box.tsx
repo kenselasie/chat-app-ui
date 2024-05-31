@@ -1,18 +1,30 @@
+import * as React from "react";
 import { format } from "date-fns";
 import { MoveUpLeft } from "lucide-react";
-import * as React from "react";
+import Image from "next/image";
 
 type MessageBoxProps = {
   type: "receiving" | "sending";
   content: string;
   date: Date;
+  image?: string;
 };
 
-const MessageBox = ({ type, content, date }: MessageBoxProps) => {
+const MessageBox = ({ type, content, date, image }: MessageBoxProps) => {
   if (type === "receiving") {
     return (
       <div className="flex gap-1">
-        <div className="rounded-full size-[32px] bg-gray-200" />
+        {image ? (
+          <Image
+            src={`/uploads/${image}`}
+            width={32}
+            height={32}
+            alt="profile-img"
+            className="rounded-full max-h-[32px] max-w-[32px]"
+          />
+        ) : (
+          <div className="rounded-full size-[32px] bg-gray-200" />
+        )}
         <div className="flex flex-col justify-center bg-[#F1F1F1] size-fit max-w-[500px] rounded-[32px] min-h-[58px] p-4">
           <p className="text-xs">{format(date, "hh:mm aaa")}</p>
           <p className="text-base">{content}</p>
@@ -27,7 +39,17 @@ const MessageBox = ({ type, content, date }: MessageBoxProps) => {
         <p className="text-xs">{format(date, "hh:mm aaa")}</p>
         <p className="text-base">{content}</p>
       </div>
-      <div className="rounded-full size-[32px] bg-gray-200" />
+      {image ? (
+        <Image
+          src={`/uploads/${image}`}
+          width={32}
+          height={32}
+          alt="profile-img"
+          className="rounded-full max-h-[32px] max-w-[32px]"
+        />
+      ) : (
+        <div className="rounded-full size-[32px] bg-gray-200" />
+      )}
     </div>
   );
 };

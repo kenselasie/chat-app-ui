@@ -1,6 +1,7 @@
 "use server";
 import { Prisma } from "@prisma/client";
 import { db } from "../../../db";
+import * as fs from "fs";
 
 type ChatFullType = Prisma.ChatGetPayload<{
   include: {
@@ -70,7 +71,11 @@ export const getChatById = async ({ id }: { id: string }) => {
       },
       messages: {
         include: {
-          sender: true,
+          sender: {
+            include: {
+              photo: true,
+            },
+          },
         },
       },
     },

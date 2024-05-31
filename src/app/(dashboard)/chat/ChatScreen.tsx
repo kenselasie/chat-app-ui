@@ -69,10 +69,11 @@ const Chat = () => {
               <div className="flex items-center gap-2">
                 {userDetails?.photo ? (
                   <Image
-                    src={userDetails.photo.thumbnail}
+                    src={`/uploads/${userDetails.photo.thumbnail}`}
                     width={48}
                     height={48}
                     alt="profile-img"
+                    className="rounded-full min-h-[48px] min-w-[48px] borer border-2"
                   />
                 ) : (
                   <div className="rounded-full size-[48px] bg-gray-200" />

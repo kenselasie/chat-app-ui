@@ -52,10 +52,11 @@ const ChatCell = ({
       <div>
         {recipient?.photo ? (
           <Image
-            src={recipient?.photo.thumbnail}
+            src={`/uploads/${recipient.photo.original}`}
             width={48}
             height={48}
             alt="profile-img"
+            className="rounded-full min-h-[48px] min-w-[48px] borer border-2"
           />
         ) : (
           <div className="rounded-full size-[48px] bg-gray-200" />
