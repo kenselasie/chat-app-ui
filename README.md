@@ -41,5 +41,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ```bash
 yarn prisma generate
+
 yarn prisma db push
+```
+
+The above command prepare the database to be in sync with the database schema in the codebase and/or pushes the latest model update directly. For a safer push, you can use the migration command instead below. You can find more information in the [prisma documentation](https://www.prisma.io/docs/getting-started).
+
+```bash
+yarn prisma generate
+
+yarn prisma migrate dev
 ```
