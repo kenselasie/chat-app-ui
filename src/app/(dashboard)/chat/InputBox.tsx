@@ -8,11 +8,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sendMessageToChat } from "./actions";
 import { authStore } from "@/store/authStore";
 import { toast } from "sonner";
+import { socket } from "@/socket";
 
 type InputBoxProps = {
   chatId: string;
+  recipientId: string;
+  onChange: (e: any) => void;
 };
-const InputBox = ({ chatId }: InputBoxProps) => {
+const InputBox = ({ chatId, recipientId, onChange }: InputBoxProps) => {
   const [messageText, setMessageText] = React.useState("");
   const queryClient = useQueryClient();
 
@@ -27,6 +30,7 @@ const InputBox = ({ chatId }: InputBoxProps) => {
 
   const sendMessage = () => {
     if (!messageText) return;
+    socket.emit("stop typing", chatId);
     sendMessageService(
       {
         chatId,
@@ -36,7 +40,10 @@ const InputBox = ({ chatId }: InputBoxProps) => {
       {
         onSuccess: (data) => {
           console.log(data);
-          toast.success(data.message);
+          socket.emit("new message", {
+            recepient_id: recipientId,
+            data: data.data,
+          });
         },
         onError: (err) => {
           const error = err as any;
@@ -46,10 +53,12 @@ const InputBox = ({ chatId }: InputBoxProps) => {
           queryClient.invalidateQueries({
             queryKey: ["getChatById", chatId],
           });
+          setMessageText("");
         },
       }
     );
   };
+
   return (
     <div className="flex gap-4 items-center h-[5%]">
       <div className="relative overflow-hidden rounded-3xl  w-full">
@@ -58,7 +67,10 @@ const InputBox = ({ chatId }: InputBoxProps) => {
         </Label>
         <Textarea
           value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
+          onChange={(e) => {
+            setMessageText(e.target.value);
+            return onChange(e);
+          }}
           id="message"
           placeholder="Type your message"
           className="bg-[#F7F7F7] min-h-12 resize-none border-0 shadow-none placeholder:pt-2"

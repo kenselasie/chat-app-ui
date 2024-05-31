@@ -54,7 +54,7 @@ const SetupProfile = () => {
         onSuccess: (data) => {
           console.log(data);
           toast.success("Successful");
-          router.push(ROUTES.CHAT_DASHBOARD);
+          router.push(ROUTES.CHAT_DASHBOARD({}));
         },
         onError: (err) => {
           const error = err as any;

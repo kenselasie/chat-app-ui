@@ -80,7 +80,7 @@ const ChatUserCell = ({ user }: { user: ChatUserCellProps }) => {
           <p className="text-xs text-gray-400"></p>
         </div>
         <div>
-          <p className="text-sm">Start a new chat</p>
+          <p className="text-xs">Start a new chat</p>
         </div>
       </div>
     </div>

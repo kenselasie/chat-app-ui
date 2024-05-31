@@ -4,6 +4,8 @@ import Image from "next/image";
 import { authStore } from "@/store/authStore";
 import Link from "next/link";
 import { ROUTES } from "@/const/routes";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 export type ChatCellProps = Prisma.ChatGetPayload<{
   include: {
@@ -20,7 +22,13 @@ export type ChatCellProps = Prisma.ChatGetPayload<{
   };
 }>;
 
-const ChatCell = ({ chat }: { chat: ChatCellProps }) => {
+const ChatCell = ({
+  chat,
+  recipientId,
+}: {
+  chat: ChatCellProps;
+  recipientId: string;
+}) => {
   const getRecipient = () => {
     if (chat.users.length <= 0) return null;
     if (chat.users.length === 1) {
@@ -36,7 +44,10 @@ const ChatCell = ({ chat }: { chat: ChatCellProps }) => {
         recipientId: recipient?.id,
         chatId: chat.id,
       })}
-      className="flex w-full gap-3 cursor-pointer hover:bg-[#F7F7F7] p-4"
+      className={cn({
+        "flex w-full gap-3 cursor-pointer hover:bg-[#F7F7F7] p-4": true,
+        "bg-[#F7F7F7]": recipientId === recipient?.id,
+      })}
     >
       <div>
         {recipient?.photo ? (
@@ -53,10 +64,27 @@ const ChatCell = ({ chat }: { chat: ChatCellProps }) => {
       <div className="flex flex-col w-full justify-center">
         <div className="flex justify-between">
           <p className="text-[15px] font-bold">{recipient?.name}</p>
-          <p className="text-xs text-gray-400">8:46am</p>
+
+          {chat.messages.length > 0 ? (
+            <p className="text-xs">
+              {format(
+                chat.messages[chat.messages.length - 1].createdAt,
+                "hh:mmaaa"
+              )}
+            </p>
+          ) : (
+            <p className="text-xs text-gray-400"></p>
+          )}
         </div>
         <div>
-          <p className="text-sm">I actually tell am. That be what I tell...</p>
+          {chat.messages.length > 0 ? (
+            <p className="text-xs">
+              {chat.messages[chat.messages.length - 1].content}
+            </p>
+          ) : (
+            <p className="text-xs">Keep all your personal info here</p>
+          )}
+          <p className="text-xs"></p>
         </div>
       </div>
     </Link>

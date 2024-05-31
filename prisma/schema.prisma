@@ -52,7 +52,7 @@ model Message {
   sender    User     @relation("Sender", fields: [senderId], references: [id])
   senderId  String   @db.VarChar(21)
   content   String
-  chat      Chat     @relation(fields: [chatId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   chatId    String   @db.VarChar(21)
   readBy    User[]   @relation("Readers")
   createdAt DateTime @default(now())

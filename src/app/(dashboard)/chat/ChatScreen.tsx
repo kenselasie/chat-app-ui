@@ -16,7 +16,7 @@ import ChatCell from "@/components/chat-cell";
 import ChatUserCell from "@/components/chat-user-cell";
 import { useSearchParams } from "next/navigation";
 
-const Chat = async () => {
+const Chat = () => {
   const { data: userDetails, isLoading: isLoadingUserDetails } = useQuery({
     queryKey: ["getUserByID"],
     queryFn: () => getUserByID({ id: authStore.userDetails?.id! }),
@@ -102,7 +102,7 @@ const Chat = async () => {
                 <div className="flex flex-col gap-2 justify-center w-full">
                   {chats?.map((chat, index) => (
                     <div className="w-full" key={index}>
-                      <ChatCell chat={chat} />
+                      <ChatCell recipientId={recipientId} chat={chat} />
                     </div>
                   ))}
                   <p className="text-xs font-bold text-center">New Chats</p>
